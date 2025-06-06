@@ -1,0 +1,40 @@
+package hust.soict.dsai.aims.cart;
+
+import hust.soict.dsai.aims.media.Media;
+import hust.soict.dsai.aims.store.Store;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+public class Cart {
+    private ObservableList<Media> itemsOrdered = FXCollections.observableArrayList();
+    private float totalCost = 0.0f;
+    private Store store;
+
+    public Cart(Store store) {
+        this.store = store;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void addMedia(Media media) {
+        itemsOrdered.add(media);
+        totalCost += media.getCost();
+    }
+
+    public void removeMedia(Media media) {
+        if (itemsOrdered.contains(media)) {
+            itemsOrdered.remove(media);
+            totalCost -= media.getCost();
+        }
+    }
+
+    public ObservableList<Media> getItemsOrdered() {
+        return itemsOrdered;
+    }
+
+    public float totalCost() {
+        return totalCost;
+    }
+}

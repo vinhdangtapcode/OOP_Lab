@@ -1,0 +1,62 @@
+package hust.soict.dsai.javafx;
+
+import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.RadioButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+
+public class PainterController {
+
+    @FXML
+    private Canvas drawingCanvas;
+
+    @FXML
+    private RadioButton penButton;
+
+    @FXML
+    private RadioButton eraserButton;
+
+    private GraphicsContext gc;
+
+    @FXML
+    public void initialize() {
+        gc = drawingCanvas.getGraphicsContext2D();
+        // Đặt màu vẽ mặc định là đen và độ rộng nét vẽ là 2
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(2);
+    }
+
+    @FXML
+    private void startDrawing(MouseEvent event) {
+        // Kiểm tra xem có chọn công cụ bút vẽ (pen) hay không
+        if (penButton.isSelected()) {
+            gc.beginPath();  // Bắt đầu vẽ đường
+            gc.moveTo(event.getX(), event.getY());  // Đặt điểm bắt đầu
+        }
+        // Kiểm tra xem có chọn công cụ tẩy (eraser) hay không
+        else if (eraserButton.isSelected()) {
+            gc.clearRect(event.getX() - 10, event.getY() - 10, 20, 20); // Xoá vùng 20x20 px tại vị trí chuột
+        }
+    }
+
+    @FXML
+    private void draw(MouseEvent event) {
+        // Vẽ nếu chọn công cụ bút vẽ
+        if (penButton.isSelected()) {
+            gc.lineTo(event.getX(), event.getY());  // Vẽ tiếp điểm tiếp theo
+            gc.stroke();  // Vẽ lên canvas
+        }
+        // Tẩy nếu chọn công cụ tẩy
+        else if (eraserButton.isSelected()) {
+            gc.clearRect(event.getX() - 10, event.getY() - 10, 20, 20); // Xoá vùng 20x20 px tại vị trí chuột
+        }
+    }
+
+    @FXML
+    private void clearButtonPressed() {
+        // Xoá toàn bộ canvas
+        gc.clearRect(0, 0, drawingCanvas.getWidth(), drawingCanvas.getHeight());
+    }
+}

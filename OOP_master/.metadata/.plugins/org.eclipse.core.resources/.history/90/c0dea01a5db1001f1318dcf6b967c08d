@@ -1,0 +1,143 @@
+package hust.soict.dsai.aims;
+import java.util.Scanner;
+
+public class Aims {
+    public static void showMenu() {
+        System.out.println("AIMS: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. View store");
+        System.out.println("2. Update store");
+        System.out.println("3. See current cart");
+        System.out.println("0. Exit");
+        System.out.println("--------------------------------");
+        System.out.println("Please choose a number: 0-1-2-3");
+    }
+
+    public static void storeMenu() {
+        System.out.println("Options: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. See a media’s details");
+        System.out.println("2. Add a media to cart");
+        System.out.println("3. Play a media");
+        System.out.println("4. See current cart");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------");
+        System.out.println("Please choose a number: 0-1-2-3-4");
+    }
+
+    public static void mediaDetailsMenu() {
+        System.out.println("Options: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. Add to cart");
+        System.out.println("2. Play");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------");
+        System.out.println("Please choose a number: 0-1-2");
+    }
+
+    public static void cartMenu() {
+        System.out.println("Options: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. Filter medias in cart");
+        System.out.println("2. Sort medias in cart");
+        System.out.println("3. Remove media from cart");
+        System.out.println("4. Play a media");
+        System.out.println("5. Place order");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------");
+        System.out.println("Please choose a number: 0-1-2-3-4-5");
+    }
+
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        Store store = new Store();
+        Cart cart = new Cart();
+
+        // Add items to store
+        store.addMedia(new DigitalVideoDisc("The Lion King", "Animation", "Roger Allers", 87, 19.95f));
+        store.addMedia(new CompactDisc("Greatest Hits", "Music", 24.99f, "Artist A"));
+        store.addMedia(new Book("Java Programming", "Education", 29.99f));
+
+        boolean exit = false;
+
+        while (!exit) {
+            showMenu();
+            int option = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (option) {
+                case 1: // View store
+                    store.print();
+                    storeMenu();
+                    int storeOption = scanner.nextInt();
+                    scanner.nextLine();
+                    // Handle store menu options here (See details, Add to cart, etc.)
+                    break;
+                case 2: // Update store
+                    // Handle adding/removing items from the store
+                    break;
+                case 3: // See current cart
+                    cart.print();
+                    cartMenu();
+                    int cartOption = scanner.nextInt();
+                    scanner.nextLine();  // Consume newline
+                    switch (cartOption) {
+                        case 1: // Filter medias in cart
+                            System.out.println("Choose filter option:");
+                            System.out.println("1. By Title");
+                            System.out.println("2. By ID");
+                            int filterOption = scanner.nextInt();
+                            scanner.nextLine();  // Consume newline
+                            // Implement filter logic here
+                            break;
+                        case 2: // Sort medias in cart
+                            System.out.println("Choose sort option:");
+                            System.out.println("1. By Title");
+                            System.out.println("2. By Cost");
+                            int sortOption = scanner.nextInt();
+                            scanner.nextLine();  // Consume newline
+                            // Implement sorting logic here based on user input
+                            break;
+                        case 3: // Remove media from cart
+                            // Ask user to input title or ID of media to remove
+                            System.out.print("Enter the title of the media to remove: ");
+                            String removeTitle = scanner.nextLine();
+                            // Remove media from the cart if it exists
+                            cart.getItems().removeIf(media -> media.getTitle().equalsIgnoreCase(removeTitle));
+                            System.out.println("Media removed from cart.");
+                            break;
+                        case 4: // Play a media
+                            // Ask user to input title of media to play
+                            System.out.print("Enter the title of the media to play: ");
+                            String playTitle = scanner.nextLine();
+                            // Implement logic to find and play the media
+                            for (Media media : cart.getItems()) {
+                                if (media.getTitle().equalsIgnoreCase(playTitle)) {
+                                    media.play();
+                                    break;
+                                }
+                            }
+                            break;
+                        case 5: // Place order
+                            // Notify user an order is created and empty the cart
+                            System.out.println("Order placed successfully!");
+                            cart = new Cart();  // Empty the cart
+                            break;
+                        case 0: // Back
+                            System.out.println("Going back to main menu...");
+                            break;
+                        default:
+                            System.out.println("Invalid option. Try again.");
+                    }
+                    break;
+                case 0: // Exit
+                    exit = true;
+                    System.out.println("Exiting the application...");
+                    break;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+        scanner.close();
+    }
+}

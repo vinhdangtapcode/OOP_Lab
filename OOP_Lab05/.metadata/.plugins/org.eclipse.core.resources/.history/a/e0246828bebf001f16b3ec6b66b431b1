@@ -1,0 +1,43 @@
+package hust.soict.dsai.aims.store;
+
+import hust.soict.dsai.aims.media.CompactDisc;
+import hust.soict.dsai.aims.media.DigitalVideoDisc;
+import hust.soict.dsai.aims.media.Media;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+public class Store {
+    private ObservableList<Media> itemsInStore;
+    
+    public Store(int capacity) {
+        itemsInStore = FXCollections.observableArrayList();  // Thay ArrayList thành ObservableList
+        addMedia(new DigitalVideoDisc("The Lion King", "Animation", "Roger Allers", 87, 19.95f));
+        addMedia(new DigitalVideoDisc("Star Wars", "Science Fiction", "George Lucas", 120, 24.95f));
+        addMedia(new CompactDisc("CD Album", "Music", "Artist", 60, 15.99f, "Famous Artist"));
+    }
+    
+    public ObservableList<Media> getItemsInStore() {
+        return itemsInStore;
+    }
+    
+    public void addMedia(Media media) {
+        itemsInStore.add(media);  // ObservableList tự động cập nhật giao diện
+        System.out.println("Added media: " + media.getTitle());
+    }
+
+    public void removeMedia(Media media) {
+        if (itemsInStore.contains(media)) {
+            itemsInStore.remove(media);  // ObservableList tự động cập nhật giao diện
+            System.out.println("Removed media: " + media.getTitle());
+        } else {
+            System.out.println("Cannot find media");
+        }
+    }
+
+    public void print() {
+        System.out.println("List of media in store: ");
+        for (Media media : itemsInStore) {
+            System.out.println(media.toString());
+        }
+    }
+}

@@ -1,0 +1,38 @@
+package hust.soict.dsai.javafx;
+import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
+
+public class PainterController {
+
+    @FXML
+    private Canvas drawingCanvas;
+
+    private GraphicsContext gc;
+
+    @FXML
+    public void initialize() {
+        gc = drawingCanvas.getGraphicsContext2D();
+    }
+
+    @FXML
+    private void startDrawing(MouseEvent event) {
+        // Initialize drawing (set the color, line width, etc.)
+        gc.beginPath();
+        gc.moveTo(event.getX(), event.getY());
+    }
+
+    @FXML
+    private void draw(MouseEvent event) {
+        // Continue drawing
+        gc.lineTo(event.getX(), event.getY());
+        gc.stroke();
+    }
+
+    @FXML
+    private void clearButtonPressed() {
+        // Clear the canvas
+        gc.clearRect(0, 0, drawingCanvas.getWidth(), drawingCanvas.getHeight());
+    }
+}

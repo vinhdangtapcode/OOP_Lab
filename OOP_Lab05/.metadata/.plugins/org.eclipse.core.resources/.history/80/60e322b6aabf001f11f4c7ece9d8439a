@@ -1,0 +1,124 @@
+package hust.soict.dsai.aims.screen;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import hust.soict.dsai.aims.cart.Cart;
+import hust.soict.dsai.aims.media.Media;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
+import hust.soict.dsai.aims.store.Store;
+
+public class CartScreenController {
+    private Store store;
+    private Cart cart;
+
+    @FXML
+    private Button btnAddToCart;
+
+    @FXML
+    private Button btnPlay;
+
+    @FXML
+    private Button btnRemove;
+
+    @FXML
+    private TableView<Media> tblStore;
+
+    @FXML
+    private TableColumn<Media, String> colStoreTitle;
+
+    @FXML
+    private TableColumn<Media, String> colStoreCategory;
+
+    @FXML
+    private TableColumn<Media, Float> colStoreCost;
+
+    @FXML
+    private TableView<Media> tblCart;
+
+    @FXML
+    private TableColumn<Media, String> colCartTitle;
+
+    @FXML
+    private TableColumn<Media, String> colCartCategory;
+
+    @FXML
+    private TableColumn<Media, Float> colCartCost;
+
+    public CartScreenController(Store store, Cart cart) {
+        this.store = store;
+        this.cart = cart;
+    }
+
+    @FXML
+    private void initialize() {
+        // Store Table Setup
+        colStoreTitle.setCellValueFactory(new PropertyValueFactory<Media, String>("title"));
+        colStoreCategory.setCellValueFactory(new PropertyValueFactory<Media, String>("category"));
+        colStoreCost.setCellValueFactory(new PropertyValueFactory<Media, Float>("cost"));
+        tblStore.setItems(store.getItemsInStore());
+
+        // Cart Table Setup
+        colCartTitle.setCellValueFactory(new PropertyValueFactory<Media, String>("title"));
+        colCartCategory.setCellValueFactory(new PropertyValueFactory<Media, String>("category"));
+        colCartCost.setCellValueFactory(new PropertyValueFactory<Media, Float>("cost"));
+        tblCart.setItems(cart.getItemsOrdered());
+
+        // Hide buttons initially
+        btnPlay.setVisible(false);
+        btnRemove.setVisible(false);
+        btnAddToCart.setVisible(true);
+
+        // Set selection listener for both tables
+        tblStore.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> updateButtonBar(newValue));
+
+        tblCart.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> updateButtonBar(newValue));
+    }
+
+    // Update button visibility based on selection
+    private void updateButtonBar(Media media) {
+        if (media != null) {
+            btnRemove.setVisible(true);
+            if (media instanceof Playable) {
+                btnPlay.setVisible(true);
+            } else {
+                btnPlay.setVisible(false);
+            }
+        } else {
+            btnRemove.setVisible(false);
+            btnPlay.setVisible(false);
+        }
+    }
+
+    @FXML
+    private void btnAddToCartPressed(ActionEvent event) {
+        Media media = tblStore.getSelectionModel().getSelectedItem();
+        if (media != null) {
+            cart.addMedia(media);
+            tblCart.setItems(cart.getItemsOrdered());  // Update the cart TableView
+        }
+    }
+
+    @FXML
+    private void btnRemovePressed(ActionEvent event) {
+        Media media = tblCart.getSelectionModel().getSelectedItem();
+        if (media != null) {
+            cart.removeMedia(media);
+            tblCart.setItems(cart.getItemsOrdered());  // Update the cart TableView
+        }
+    }
+
+    @FXML
+    private void btnPlayPressed(ActionEvent event) {
+        Media media = tblCart.getSelectionModel().getSelectedItem();
+        if (media instanceof Playable) {
+            ((Playable) media).play();
+        }
+    }
+}

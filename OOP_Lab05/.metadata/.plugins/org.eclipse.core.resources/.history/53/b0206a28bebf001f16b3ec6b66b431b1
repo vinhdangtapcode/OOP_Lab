@@ -1,0 +1,75 @@
+package hust.soict.dsai.aims.screen;
+
+import hust.soict.dsai.aims.cart.Cart;
+import hust.soict.dsai.aims.media.Media;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
+public class CartScreen {
+    private Cart cart;
+    private Stage stage;
+
+    // Constructor nhận Cart từ StoreScreen
+    public CartScreen(Cart cart) {
+        this.cart = cart;
+
+        try {
+            // Tải FXML của CartScreen
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hust/soict/dsai/aims/screen/CartScreen.fxml"));
+            loader.load();
+
+            // Thiết lập controller cho FXML
+            CartScreenController controller = loader.getController();
+            controller.setCart(cart);  // Truyền Cart vào Controller
+
+            // Hiển thị màn hình
+            Scene scene = new Scene(loader.getRoot());
+            stage = new Stage();
+            stage.setTitle("Cart Screen");
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Phương thức để xử lý sự kiện "Remove" khi nhấn nút "Remove"
+    public void handleRemovePressed(Media media) {
+        // Cảnh báo xác nhận trước khi xóa media
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirm Removal");
+        alert.setHeaderText("Are you sure you want to remove this item?");
+        alert.setContentText(media.getTitle());
+
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            cart.removeMedia(media);
+            // Cập nhật lại TableView nếu có
+            // Sử dụng Platform.runLater để đảm bảo cập nhật giao diện trên thread UI
+            Platform.runLater(() -> {
+                // Cập nhật lại dữ liệu trong TableView
+                // tblMedia.setItems(cart.getItemsOrdered());  // Cập nhật nếu cần
+            });
+        }
+    }
+
+    // Phương thức để xử lý sự kiện "Play" khi nhấn nút "Play"
+    public void handlePlayPressed(Media media) {
+        // Hiển thị thông báo nếu Media là đối tượng có thể phát
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Playing Media");
+        alert.setHeaderText("Playing: " + media.getTitle());
+        alert.setContentText("Playing the media...");
+        alert.showAndWait();
+
+        // Thực hiện hành động phát video/audio nếu cần
+        media.play();
+    }
+}

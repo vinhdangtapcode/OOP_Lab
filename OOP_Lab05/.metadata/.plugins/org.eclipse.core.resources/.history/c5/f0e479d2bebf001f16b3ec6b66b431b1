@@ -1,0 +1,47 @@
+package hust.soict.dsai.aims.screen;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import hust.soict.dsai.aims.media.Media;
+import hust.soict.dsai.aims.cart.Cart;
+
+public class CartScreenController {
+
+    @FXML
+    private TableView<Media> tblMedia;
+
+    @FXML
+    private TableColumn<Media, String> colMediaTitle;
+
+    @FXML
+    private TableColumn<Media, String> colMediacategory;
+
+    @FXML
+    private TableColumn<Media, String> colMediaCost;
+
+    private Cart cart;
+
+    // Khởi tạo dữ liệu vào TableView
+    public void initialize() {
+        // Đặt giá trị cho các cột
+        colMediaTitle.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getTitle()));
+
+        colMediacategory.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getCategory()));
+
+        // Chuyển đổi 'cost' thành String
+        colMediaCost.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(String.format("$%.2f", cellData.getValue().getCost())));
+
+        // Đặt dữ liệu vào TableView từ Cart
+        tblMedia.setItems(cart.getItemsOrdered());
+    }
+
+    // Constructor để nhận Cart
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+}

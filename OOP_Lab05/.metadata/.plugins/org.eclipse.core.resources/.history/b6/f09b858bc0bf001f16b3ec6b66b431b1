@@ -1,0 +1,145 @@
+package hust.soict.dsai.aims.screen;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import hust.soict.dsai.aims.media.Media;
+import hust.soict.dsai.aims.cart.Cart;
+import hust.soict.dsai.aims.store.Store;
+import hust.soict.dsai.aims.media.Playable;
+
+public class StoreScreen extends JFrame {
+    private Store store;
+    private Cart cart;
+
+    public StoreScreen(Store store) {
+        this.store = store;
+        this.cart = new Cart(); // Khởi tạo giỏ hàng
+        Container cp = getContentPane();
+        cp.setLayout(new BorderLayout());
+
+        cp.add(createNorth(), BorderLayout.NORTH);
+        cp.add(createCenter(), BorderLayout.CENTER);
+
+        setVisible(true);
+        setTitle("Store");
+        setSize(1024, 768);
+    }
+
+    // Phương thức tạo phần menu trên
+    JPanel createNorth() {
+        JPanel north = new JPanel();
+        north.setLayout(new BoxLayout(north, BoxLayout.Y_AXIS));
+        north.add(createMenuBar());
+        north.add(createHeader());
+        return north;
+    }
+
+    // Phương thức tạo menu bar
+    JMenuBar createMenuBar() {
+        JMenu menu = new JMenu("Options");
+
+        JMenu smUpdateStore = new JMenu("Update Store");
+        smUpdateStore.add(new JMenuItem("Add Book"));
+        smUpdateStore.add(new JMenuItem("Add CD"));
+        smUpdateStore.add(new JMenuItem("Add DVD"));
+
+        menu.add(smUpdateStore);
+        menu.add(new JMenuItem("View store"));
+        menu.add(new JMenuItem("View cart"));
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.setLayout(new FlowLayout(FlowLayout.LEFT));
+        menuBar.add(menu);
+
+        return menuBar;
+    }
+
+    // Phương thức tạo header
+    JPanel createHeader() {
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
+
+        JLabel title = new JLabel("AIMS");
+        title.setFont(new Font(title.getFont().getName(), Font.PLAIN, 50));
+        title.setForeground(Color.CYAN);
+
+        JButton cart = new JButton("View cart");
+        cart.setPreferredSize(new Dimension(100, 50));
+        cart.setMaximumSize(new Dimension(100, 50));
+
+        header.add(Box.createRigidArea(new Dimension(10, 10)));
+        header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(cart);
+        header.add(Box.createRigidArea(new Dimension(10, 10)));
+
+        return header;
+    }
+
+    // Cập nhật phương thức createCenter để thêm nút "Thêm vào giỏ hàng" và "Play"
+    JPanel createCenter() {
+        JPanel center = new JPanel();
+        center.setLayout(new GridLayout(3, 3, 2, 2));
+
+        ArrayList<Media> mediaInStore = store.getItemsInStore();
+        for (int i = 0; i < Math.min(9, mediaInStore.size()); i++) {
+            Media media = mediaInStore.get(i);
+            MediaStore cell = new MediaStore(media);
+
+            // Tạo nút "Thêm vào giỏ hàng"
+            JButton addToCartButton = new JButton("Add to Cart");
+            addToCartButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Thêm media vào giỏ hàng khi nhấn nút
+                    cart.addMedia(media);
+                    JOptionPane.showMessageDialog(null, media.getTitle() + " has been added to your cart.");
+                }
+            });
+
+            // Tạo nút "Play"
+            JButton playButton = new JButton("Play");
+            playButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Phát media trong cửa sổ JDialog khi nhấn nút "Play"
+                    if (media instanceof Playable) {
+                        // Tạo JDialog để hiển thị thông báo phát media
+                        JDialog playDialog = new JDialog();
+                        playDialog.setTitle("Playing: " + media.getTitle());
+                        JLabel label = new JLabel("Playing: " + media.getTitle());
+                        playDialog.add(label, BorderLayout.CENTER);
+
+                        // Cấu hình và hiển thị cửa sổ JDialog
+                        playDialog.setSize(300, 150);
+                        playDialog.setLocationRelativeTo(null); // Đặt cửa sổ ở giữa màn hình
+                        playDialog.setModal(true); // Ngừng tương tác với cửa sổ chính khi JDialog mở
+                        playDialog.setVisible(true);
+
+                        // Phát media
+                        ((Playable) media).play();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "This media cannot be played.");
+                    }
+                }
+            });
+
+            // Thêm các nút vào mỗi ô media
+            cell.add(addToCartButton);
+            cell.add(playButton);
+
+            // Thêm ô media vào giao diện
+            center.add(cell);
+        }
+
+        return center;
+    }
+
+    public static void main(String[] args) {
+        Store store = new Store(20);
+        new StoreScreen(store);
+    }
+}

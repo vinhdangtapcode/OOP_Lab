@@ -1,0 +1,87 @@
+package hust.soict.dsai.aims.screen;
+
+import hust.soict.dsai.aims.cart.Cart;
+import hust.soict.dsai.aims.media.Media;
+import hust.soict.dsai.aims.store.Store;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Button;
+
+public class CartScreenController {
+
+    @FXML
+    private TableView<Media> tblMedia;
+    @FXML
+    private TableColumn<Media, String> colMediaTitle;
+    @FXML
+    private TableColumn<Media, String> colMediacategory;
+    @FXML
+    private TableColumn<Media, Float> colMediaCost;
+
+    @FXML
+    private Label totalLabel;
+    @FXML
+    private TextField filterField;
+    @FXML
+    private ToggleGroup filterCategory;
+    @FXML
+    private RadioButton byIdRadioButton;
+    @FXML
+    private RadioButton byTitleRadioButton;
+
+    @FXML
+    private Button btnRemove;
+
+    private Cart cart;
+    private Store store;
+
+    public void initialize(Cart cart, Store store) {
+        this.cart = cart;
+        this.store = store;
+
+        // Cập nhật bảng và tổng giá trị
+        updateTableView();
+        updateTotalLabel();
+
+        // Thiết lập sự kiện lọc
+        filterField.textProperty().addListener((observable, oldValue, newValue) -> filterItems());
+    }
+
+    private void updateTableView() {
+        ObservableList<Media> mediaList = FXCollections.observableArrayList(cart.getItemsOrdered());
+        tblMedia.setItems(mediaList);
+
+        colMediaTitle.setCellValueFactory(cellData -> cellData.getValue().getTitle());
+        colMediacategory.setCellValueFactory(cellData -> cellData.getValue().getCategory());
+        colMediaCost.setCellValueFactory(cellData -> cellData.getValue().getCost());
+    }
+
+    private void updateTotalLabel() {
+        totalLabel.setText(cart.totalCost() + "$");
+    }
+
+    public void handleRemovePressed() {
+        Media selectedMedia = tblMedia.getSelectionModel().getSelectedItem();
+        if (selectedMedia != null) {
+            cart.removeMedia(selectedMedia);
+            updateTableView();
+            updateTotalLabel();
+        }
+    }
+
+    private void filterItems() {
+        String filterText = filterField.getText();
+        if (byIdRadioButton.isSelected()) {
+            cart.searchById(Integer.parseInt(filterText));
+        } else if (byTitleRadioButton.isSelected()) {
+            cart.searchByTitle(filterText);
+        }
+    }
+}

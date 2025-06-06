@@ -1,0 +1,108 @@
+package hust.soict.dsai.aims.screen;
+
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import hust.soict.dsai.aims.media.Media;
+import hust.soict.dsai.aims.cart.Cart;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+
+public class CartScreenController {
+
+    @FXML
+    private TableView<Media> tblMedia;  // TableView để hiển thị các sản phẩm trong giỏ hàng
+
+    @FXML
+    private TableColumn<Media, String> colMediaTitle;  // Cột Tiêu đề sản phẩm
+
+    @FXML
+    private TableColumn<Media, String> colMediacategory;  // Cột Thể loại sản phẩm
+
+    @FXML
+    private TableColumn<Media, Float> colMediaCost;  // Cột Giá sản phẩm
+
+    @FXML
+    private Label totalCostLabel;  // Label để hiển thị tổng chi phí giỏ hàng
+
+    @FXML
+    private TextField filterTextField;  // TextField để lọc sản phẩm
+
+    @FXML
+    private RadioButton filterByIdRadioButton;  // RadioButton lọc theo ID
+
+    @FXML
+    private RadioButton filterByTitleRadioButton;  // RadioButton lọc theo Tiêu đề
+
+    @FXML
+    private ToggleGroup filterCategory;  // ToggleGroup để nhóm các RadioButton
+
+    private Cart cart;  // Giỏ hàng
+
+    public void initialize() {
+        cart = new Cart();  // Khởi tạo giỏ hàng
+        setupTableView();  // Cấu hình TableView
+        updateCartDisplay();  // Cập nhật giao diện giỏ hàng
+    }
+
+    private void setupTableView() {
+        // Thiết lập các cột cho TableView
+        colMediaTitle.setCellValueFactory(cellData -> cellData.getValue().titleProperty());
+        colMediacategory.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
+        colMediaCost.setCellValueFactory(cellData -> cellData.getValue().costProperty().asObject());
+
+        // Cập nhật danh sách giỏ hàng
+        tblMedia.setItems(cart.getItemsOrdered());
+    }
+
+    // Cập nhật thông tin giỏ hàng trên giao diện
+    private void updateCartDisplay() {
+        totalCostLabel.setText(cart.totalCost() + "$");
+    }
+
+    // Thêm sản phẩm vào giỏ hàng (ví dụ: từ một nút hoặc sự kiện)
+    public void addMediaToCart(Media media) {
+        cart.addMedia(media);
+        updateCartDisplay();  // Cập nhật tổng chi phí
+    }
+
+    // Xóa sản phẩm khỏi giỏ hàng khi nhấn nút Remove
+    @FXML
+    private void btnRemovePressed() {
+        Media selectedMedia = tblMedia.getSelectionModel().getSelectedItem();
+        if (selectedMedia != null) {
+            cart.removeMedia(selectedMedia);
+            updateCartDisplay();  // Cập nhật tổng chi phí
+        }
+    }
+
+    // Lọc giỏ hàng theo ID hoặc Tiêu đề
+    @FXML
+    private void filterCart() {
+        String filterText = filterTextField.getText().trim();
+        if (filterText.isEmpty()) {
+            tblMedia.setItems(cart.getItemsOrdered());  // Hiển thị toàn bộ giỏ hàng nếu không có lọc
+        } else {
+            ObservableList<Media> filteredItems = FXCollections.observableArrayList();
+
+            if (filterByIdRadioButton.isSelected()) {
+                try {
+                    int id = Integer.parseInt(filterText);
+                    cart.searchById(id);  // Tìm kiếm theo ID
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid ID format.");
+                }
+            } else if (filterByTitleRadioButton.isSelected()) {
+                cart.searchByTitle(filterText);  // Tìm kiếm theo Tiêu đề
+            }
+        }
+    }
+}

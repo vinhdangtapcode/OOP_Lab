@@ -1,0 +1,48 @@
+package hust.soict.dsai.aims.screen;
+
+import hust.soict.dsai.aims.cart.Cart;
+import hust.soict.dsai.aims.store.Store;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+
+import javax.swing.*;
+import java.io.IOException;
+
+public class CartScreen extends JFrame {
+    private Cart cart;
+    private Store store; // Nhận Store để quay lại màn hình Store
+
+    public CartScreen(Cart cart, Store store) { // Nhận cả Store
+        super();
+        this.cart = cart;
+        this.store = store; // Lưu trữ Store được truyền vào
+
+        JFXPanel fxPanel = new JFXPanel();
+        this.add(fxPanel);
+
+        this.setTitle("Cart");
+        this.setVisible(true);
+        this.setSize(1024, 768);
+
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/hust/soict/dsai/aims/screen/cart.fxml"));
+                CartScreenController controller = new CartScreenController(cart);
+                loader.setController(controller);
+                Parent root = loader.load();
+                fxPanel.setScene(new Scene(root));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void handleViewStore() {
+        this.dispose();
+        new StoreScreen(store, cart); // Quay lại StoreScreen, giữ nguyên Cart
+    }
+}

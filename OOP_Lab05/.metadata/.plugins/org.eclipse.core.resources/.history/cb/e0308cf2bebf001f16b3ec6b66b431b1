@@ -1,0 +1,18 @@
+package hust.soict.dsai.aims.screen;
+
+import hust.soict.dsai.aims.media.Media;
+import javafx.scene.control.ListCell;
+
+public class MediaCell extends ListCell<Media> {
+    @Override
+    protected void updateItem(Media media, boolean empty) {
+        super.updateItem(media, empty);
+
+        if (empty || media == null) {
+            setText(null);
+            setGraphic(null);
+        } else {
+            setText(media.getTitle() + " - $" + media.getCost());
+        }
+    }
+}

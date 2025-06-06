@@ -1,0 +1,58 @@
+package hust.soict.dsai.aims.screen;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javax.swing.JFrame;
+import java.io.IOException;
+import hust.soict.dsai.aims.cart.Cart;
+
+public class CartScreen extends JFrame {
+    private static final long serialVersionUID = 1L;
+    private Cart cart;
+
+    public CartScreen(Cart cart) {
+        super();
+        this.cart = cart;
+
+        // Tạo JFXPanel để tích hợp JavaFX trong Swing JFrame
+        JFXPanel fxPanel = new JFXPanel();
+        this.add(fxPanel);
+
+        // Cài đặt các thuộc tính cho JFrame
+        this.setTitle("Cart");
+        this.setSize(1024, 768);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+
+        // Tạo giao diện JavaFX bên trong JFXPanel
+        Platform.runLater(() -> initFX(fxPanel));
+    }
+
+    private void initFX(JFXPanel fxPanel) {
+        try {
+            // Tải FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hust/soict/dsai/aims/screen/cart.fxml"));
+
+            // Gán controller với đối tượng cart
+            CartScreenController controller = new CartScreenController(cart);
+            loader.setController(controller);
+
+            // Tải giao diện FXML
+            Parent root = loader.load();
+
+            // Đặt Scene JavaFX trong JFXPanel
+            fxPanel.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        // Tạo một đối tượng Cart và mở CartScreen
+        Cart cart = new Cart();
+        new CartScreen(cart);
+    }
+}

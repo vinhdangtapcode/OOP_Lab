@@ -1,0 +1,41 @@
+package hust.soict.dsai.aims.cart;
+
+import hust.soict.dsai.aims.media.Media;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+public class Cart {
+    private ObservableList<Media> itemsOrdered = FXCollections.observableArrayList();  // Sử dụng ObservableList
+    private float totalCost = 0.0f;
+
+    public void addMedia(Media media) {
+        itemsOrdered.add(media);
+        totalCost += media.getCost();
+    }
+    
+    public void removeMedia(Media media) {
+        if (itemsOrdered.contains(media)) {
+            itemsOrdered.remove(media);  // ObservableList tự động cập nhật giao diện
+            totalCost -= media.getCost();
+        } else {
+            System.out.println("The media item is not in the cart.");
+        }
+    }
+
+    public ObservableList<Media> getItemsOrdered() {
+        return itemsOrdered;
+    }
+
+    public float totalCost() {
+        return totalCost;
+    }
+
+    public void print() {
+        System.out.println("***********************CART***********************");
+        for (Media media : itemsOrdered) {
+            System.out.println(media.toString());
+        }
+        System.out.println("Total cost: " + totalCost);
+        System.out.println("******************************************************");
+    }
+}

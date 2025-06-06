@@ -1,0 +1,115 @@
+package hust.soict.dsai.aims.screen;
+
+import hust.soict.dsai.aims.media.Media;
+import hust.soict.dsai.aims.cart.Cart;
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+
+public class CartScreen extends Application {
+
+    private TableView<Media> tblMedia;
+    private TableColumn<Media, String> colMediaTitle;
+    private TableColumn<Media, String> colMediacategory;
+    private TableColumn<Media, Float> colMediaCost;
+    private Label totalCostLabel;
+    private TextField filterTextField;
+    private ToggleGroup filterCategory;
+    private Cart cart;
+
+    @Override
+    public void start(Stage primaryStage) {
+        // Khởi tạo giỏ hàng
+        cart = new Cart();
+
+        // Tạo các thành phần giao diện
+        createTableView();
+        createControls();
+        layoutComponents();
+
+        // Tạo Scene và hiển thị
+        Scene scene = new Scene(createRootLayout(), 1024, 768);
+        primaryStage.setTitle("AIMS Cart");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void createTableView() {
+        tblMedia = new TableView<>();
+        colMediaTitle = new TableColumn<>("Title");
+        colMediacategory = new TableColumn<>("Category");
+        colMediaCost = new TableColumn<>("Cost");
+
+        colMediaTitle.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTitle()));
+        colMediacategory.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCategory()));
+        colMediaCost.setCellValueFactory(cellData -> new javafx.beans.property.SimpleFloatProperty(cellData.getValue().getCost()).asObject());
+
+        tblMedia.getColumns().addAll(colMediaTitle, colMediacategory, colMediaCost);
+        tblMedia.setItems(cart.getItemsOrdered());
+    }
+
+    private void createControls() {
+        // Tạo các điều khiển cho lọc
+        filterTextField = new TextField();
+        filterCategory = new ToggleGroup();
+        RadioButton filterByIdRadioButton = new RadioButton("By ID");
+        filterByIdRadioButton.setToggleGroup(filterCategory);
+        filterByIdRadioButton.setSelected(true);
+        RadioButton filterByTitleRadioButton = new RadioButton("By Title");
+        filterByTitleRadioButton.setToggleGroup(filterCategory);
+
+        // Tạo label hiển thị tổng chi phí
+        totalCostLabel = new Label("Total: 0$");
+        totalCostLabel.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-font-size: 24px;");
+
+        // Các nút điều khiển
+        Button btnRemove = new Button("Remove");
+        btnRemove.setOnAction(e -> btnRemovePressed());
+    }
+
+    private void layoutComponents() {
+        // Tạo layout cho các phần trong ứng dụng
+        VBox vboxLeft = new VBox(10);
+        vboxLeft.getChildren().addAll(
+            new Label("Filter"), filterTextField,
+            new HBox(10, new Label("Filter by: "), filterCategory),
+            tblMedia
+        );
+
+        VBox vboxRight = new VBox(10);
+        vboxRight.getChildren().addAll(
+            new Label("Total:"),
+            totalCostLabel
+        );
+
+        HBox hboxControls = new HBox(10);
+        hboxControls.getChildren().addAll(
+            new Button("Play"), new Button("Remove")
+        );
+
+        BorderPane root = new BorderPane();
+        root.setTop(vboxLeft);
+        root.setCenter(vboxRight);
+        root.setBottom(hboxControls);
+    }
+
+    private void btnRemovePressed() {
+        Media selectedMedia = tblMedia.getSelectionModel().getSelectedItem();
+        if (selectedMedia != null) {
+            cart.removeMedia(selectedMedia);
+            updateCartDisplay();
+        }
+    }
+
+    private void updateCartDisplay() {
+        totalCostLabel.setText(cart.totalCost() + "$");
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

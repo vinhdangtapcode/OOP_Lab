@@ -1,0 +1,35 @@
+package hust.soict.dsai.aims.screen;
+
+import hust.soict.dsai.aims.cart.Cart;
+import hust.soict.dsai.aims.store.Store;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+
+public class CartScreen {
+
+    private Cart cart;
+    private Store store;
+
+    public CartScreen(Cart cart, Store store) {
+        this.cart = cart;
+        this.store = store;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("cart.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            Stage stage = new Stage();
+            stage.setTitle("Cart Screen");
+            stage.setScene(scene);
+
+            CartScreenController controller = loader.getController();
+            controller.initialize(cart, store);  // Truyền giỏ hàng và cửa hàng vào controller
+
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
